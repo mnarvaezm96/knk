@@ -10,8 +10,23 @@ window.addEventListener('scroll', onScroll, { passive: true });
 // Menú móvil
 const toggle = document.getElementById('navToggle');
 const links = document.getElementById('navLinks');
-toggle.addEventListener('click', () => links.classList.toggle('is-open'));
-links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('is-open')));
+function setMenu(open) {
+  links.classList.toggle('is-open', open);
+  toggle.classList.toggle('is-open', open);
+  toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+}
+toggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  setMenu(!links.classList.contains('is-open'));
+});
+links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+// Cerrar al tocar fuera del menú
+document.addEventListener('click', (e) => {
+  if (links.classList.contains('is-open') && !e.target.closest('.nav')) setMenu(false);
+});
+// Cerrar con Escape
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
 
 // Reveal al hacer scroll
 const revealEls = document.querySelectorAll('.section');
